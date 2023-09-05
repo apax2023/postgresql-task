@@ -3,9 +3,12 @@
     "inputs": {
         "filter": {
             "text_search": "0d24e6c8b23b04a7c5ed3a1b728f8c61",
-            "operation": {"start_date": "1970-01-01", "end_date": "2023-06-01"},
-            "registration": {"exists": true}
+            "operation": {"start_date": "2019-01-01",
+                          "end_date": "2021-07-30"},
+            "registration": {"exists": true},
+            "journey_slug": ["journey-7", "journey-5"],
+            "side": "right"
         },
-        "page": {"index": 0, "size": 20}
+        "page": {"index": 0, "size": 100}
     }
 }

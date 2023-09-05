@@ -6,3 +6,12 @@
 2023-09-05 18:56:37,421 - INFO - Query output successfully written.
 2023-09-05 18:59:38,630 - INFO - Query output successfully written.
 2023-09-05 19:05:31,929 - INFO - Query output successfully written.
+2023-09-05 20:25:51,285 - ERROR - Database error: relation "patient_journey_visibility_view" does not exist
+LINE 43: FROM patient_journey_visibility_view
+              ^
+
+2023-09-05 20:26:32,313 - ERROR - Database error: relation "patient_journey_visibility_view" does not exist
+LINE 43: FROM patient_journey_visibility_view
+              ^
+
+2023-09-05 20:28:47,275 - INFO - Query output successfully written.
