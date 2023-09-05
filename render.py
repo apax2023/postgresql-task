@@ -6,20 +6,16 @@ To run it pass the below arguments:
 path to the query file, path to the parameters json file and the
 name of the output file."""
 
+import argparse
 import json
 import logging
 import os
-import sys
 
 import psycopg2
+from dotenv import load_dotenv
 from jinja2 import Template
 from prettytable import PrettyTable
-import argparse
-from dotenv import load_dotenv
 
-# QUERY_FILE_PATH = sys.argv[1]
-# QUERY_PARAMS_PATH = sys.argv[2]
-# OUTPUT_FILE_NAME = sys.argv[3]
 
 load_dotenv()
 
@@ -132,6 +128,8 @@ def query_db(query: str, db_cred: dict, file_name: str) -> list:
         if conn:
             conn.close()
 
+    return results
+
 
 def main() -> None:
     """Main function running the whole process.
@@ -139,10 +137,8 @@ def main() -> None:
     Returns:
         None: None
     """
-    # Create an ArgumentParser object
     parser = argparse.ArgumentParser(description='My PostgreSQL Task')
 
-    # Add argument options
     parser.add_argument('--parameters_file', required=True,
                         help='Path to the parameters file')
     parser.add_argument('--query_file', required=True,
@@ -150,10 +146,8 @@ def main() -> None:
     parser.add_argument('--output_file', required=True,
                         help='Path to the output file')
 
-    # Parse the command-line arguments
     args = parser.parse_args()
 
-    # Access the argument values
     parameters_file = args.parameters_file
     query_file = args.query_file
     output_file = args.output_file

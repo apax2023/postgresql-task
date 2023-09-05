@@ -1,4 +1,4 @@
-# My PostgreSQL Task
+# PostgreSQL Task
 
 This is to show the work I did for PostgreSQL task.
 
@@ -8,7 +8,7 @@ To get started, follow these steps to set up your environment:
 
 1. Clone this repository:
 ```bash 
-git clone https://github.com/yourusername/my-postgreSQL-task.git
+git clone https://github.com/apax2023/postgresql-task.git
 cd my-postgreSQL-task
 ```
 
@@ -43,7 +43,7 @@ PORT=your_port
 
 You can run the app by executing the `render.py` script with the following required arguments:
 ```bash
-python render.py --parameters_file paramseters_file_path --query_file query_file_path --output_file journey_7.txt
+python render.py --parameters_file paramseters_file_path --query_file query_file_path --output_file output_file_name
 ```
 This will get the parameters and query from the given files and writes the outcome of the query in .txt format with 
 a given name in results directory.
