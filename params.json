@@ -1,0 +1,11 @@
+{
+    "request_persona_id": 3832,
+    "inputs": {
+        "filter": {
+            "text_search": "0d24e6c8b23b04a7c5ed3a1b728f8c61",
+            "operation": {"start_date": "1970-01-01", "end_date": "2023-06-01"},
+            "registration": {"exists": true}
+        },
+        "page": {"index": 0, "size": 20}
+    }
+}

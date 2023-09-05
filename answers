@@ -1,0 +1,115 @@
+Tasks Preparation
+After installing Postgresql and setting up the connection etc, I restored the database using below command:
+
+pg_restore --username=amir --dbname=my_recovery  test_warehouse.sql -Fc --clean 
+
+-------------------------------
+
+Tasks: 
+- Render and execute the query.
+This was done using render.py which is a simple python package consist of three functions.
+One function to process the query parameters, one to render the query using the parameters, and 
+one to run the query and get the output. There is also a main function where running the whole
+Process is defined.
+
+When running the code, three parameters are required, path to the query file, path to the parameters json file and the
+name of the output file where we want the output to be written.
+
+Please note the db credentials are saved in the code except for the user itself which is saved as an environment
+varaiable. There is no password in this case. In practice I should probably use secret management service or connection
+pool.
+
+-------------------------------
+
+Issues running the query:
+One issue was related to ambiguity of a particular field, "patient_id", when trying to join two tables. This was fixed
+by explicitly saying which table / view to get that field when selecting and also when using group_by.
+
+One of the columns that is selected, patient_journey_visibility_view.patient_prm_id, is not required and that line can
+be removed.
+
+-------------------------------
+
+Queries:
+When running the queries, the only thing that is changes is the parameters in the associated json file. Nothing in the
+sql or python file is changed. The first query returns one record, that matches the id, the date and other criteria.
+Below are other queries:
+
+
+>>> Patients who have an operation date in 2019
+35 operations (visible to the particular clinician)
+
+>>> Patients who have a registration milestone
+275 patients with registration date
+
+>>> Page 2 of the list, where the size of the patient list is 25 patients
+25 records, would be obviously less if total number of output was less than 50.
+
+-------------------------------
+
+Add more filters:
+Please see the sql file to see how the Ninja block is written and where it's used. Below are the definitions of them:
+
+-- Journey slug filtering
+{% macro journey_slug_filter(slug_list) %}
+  {% if slug_list and slug_list|length > 0 %}
+  AND (
+    {% for slug_term in slug_list %}
+      journey_slug = '{{ slug_term }}'{% if not loop.last %} OR {% endif %}
+    {% endfor %}
+  )
+  {% endif %}
+{% endmacro %}
+
+-- Filtering based on side
+{% macro side_filter(req_side) %}
+  {% if req_side %}
+      {% if req_side == 'right' %}
+        AND side = 'right'
+      {% elif req_side == 'left' %}
+        AND side = 'left'
+      {% elif req_side == 'both' %}
+        AND (side = 'left' OR side = 'right')
+      {% endif %}
+  {% endif %}
+{% endmacro %}
+
+
+Below are some example parameters that can be used for the above filtering:
+
+{
+    "request_persona_id": 3832,
+    "inputs": {
+        "filter": {
+            "text_search": "0d24e6c8b23b04a7c5ed3a1b728f8c61",
+            "operation": {"start_date": "2019-01-01",
+                          "end_date": "2021-07-30"},
+            "registration": {"exists": true},
+            "journey_slug": ["journey-7", "journey-5"],
+            "side": "right"
+        },
+        "page": {"index": 0, "size": 10000}
+    }
+}
+-------------------------------
+
+Consider performance:
+
+I believe the sum of step data can be aggregated before we run the query, so that is available anytime. That can be
+added to the existing view (patient_journey_visibility_view ) or potentially to a different/new view. I would add it to
+the current view unless the purpose of the view is totally different. We can use window function instead of group_by to
+help adding that to all records. So we can instead of aggregating at the time of running the query, aggregate and add
+that as a new column to each record. That can be trigger base so whenever there is a change in the
+fact-daily-health-data we re-calculate the sum for the view. That would help with the performance not only by having
+the data available at the time of running but also by reducing two joins in the query.
+
+-------------------------------
+
+Demonstrate modularity:
+I would create a python package that dynamically generating all sorts of queries based on the information it gets from
+a configuration file for instance a yaml file. We could possibly have different classes for different clients or use
+the same one if queries are relatively similar. What we can receive from the config file is the list of columns, list
+of tables, the query types, the joins and tables that need to be joined, the join columns, the join types etc. In that
+case the python package picks everything it needs from the config file to generate appropriate queries.
+
+
